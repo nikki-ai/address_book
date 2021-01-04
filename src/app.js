@@ -15,6 +15,7 @@ const morganOption = (NODE_ENV === 'production');
 app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
+app.use(express.json());
 
 const addys = [
   {
@@ -79,6 +80,23 @@ app.post('/address', (req, res) => {
   addys.push(newAddress);
 
   res.send('Successful entry');
+});
+
+app.delete('/address/:addyId', (req, res) => {
+  const { addyId } = req.params;
+
+  const index = addys.findIndex(a => a.id === addyId);
+
+  // make sure we actually find a user with that id
+  if (index === -1) {
+    return res
+      .status(404)
+      .send('Address not found');
+  }
+
+  addys.splice(index, 1);
+
+  res.status(204).end();
 });
 
 app.use(function errorHandler(error, req, res, next) {
